@@ -1,8 +1,9 @@
 # coding: utf-8
 
 from flask import request, jsonify
-
 from . import api
+from .schema import user_schema
+from .response import api_response, InvalidUsage
 from .. import oauth
 
 
@@ -304,5 +305,7 @@ def me():
       - petstore_auth:
           - email
     """
+
     user = request.oauth.user
-    return jsonify(id=user.id, email=user.email)
+
+    return api_response(user_schema.dump(user).data)
