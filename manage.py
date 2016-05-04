@@ -5,7 +5,6 @@ import os
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.script.commands import ShowUrls
-
 from flaskygram import create_app, db
 
 COV = None
