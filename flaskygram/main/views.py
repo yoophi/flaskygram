@@ -90,8 +90,8 @@ def spec():
 
         #### META
         The meta key is used to communicate extra information about the response to
-        the developer. If all goes well, you'll only ever see a code key with value
-        200. However, sometimes things go wrong, and in that case you might see a
+        the developer. If all goes well, you'll only ever see a code key with value 200.
+        However, sometimes things go wrong, and in that case you might see a
         response like:
         ```json
         {
