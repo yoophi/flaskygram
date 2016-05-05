@@ -1,4 +1,6 @@
-from flask import jsonify
+from flask import jsonify, current_app, request
+from flask.json import dumps
+
 from . import api
 
 from .schema import EnvelopeSchema
@@ -15,7 +17,8 @@ def api_response(data, meta=None, pagination=None):
     if pagination:
         rv['pagination'] = pagination
 
-    return jsonify(EnvelopeSchema().dump(rv).data)
+    # return jsonify(EnvelopeSchema().dump(rv).data)
+    return json_or_jsonp_response(EnvelopeSchema().dump(rv).data)
 
 
 def error_response(status_code=400, message=None):
@@ -51,3 +54,21 @@ class InvalidUsage(Exception):
 @api.errorhandler(InvalidUsage)
 def handle_invalid_usage(error):
     return error_response(status_code=error.status_code, message=error.message)
+
+
+def json_or_jsonp_response(*args, **kwargs):
+    indent = None
+    if current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] \
+            and not request.is_xhr:
+        indent = 2
+
+    data = dumps(dict(*args, **kwargs), indent=indent)
+    mimetype = 'application/json'
+
+    # is jsonp request?
+    callback = request.args.get('callback', False)
+    if callback:
+        data = str(callback) + '(' + data + ')'
+        mimetype = 'application/javascript'
+
+    return current_app.response_class(data, mimetype=mimetype)
