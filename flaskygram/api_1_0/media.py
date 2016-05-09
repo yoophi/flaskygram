@@ -1,10 +1,44 @@
-from flask import jsonify
+from flask import jsonify, request
 from flask.views import MethodView
-
 from . import api
 
 
-@api.route('/media/<media_id>')
+@api.route('/media/upload', methods=['POST'])
+def media_upload():
+    """
+    Upload file
+    ---
+    consumes:
+      - multipart/form-data
+    parameters:
+      - name: file
+        in: formData
+        description: The file to upload
+        type: file
+        required: true
+    produces:
+      - application/json
+    tags:
+      - Media
+    description: |
+      Get information about a media object.
+      The returned type key will allow you to differentiate between `image`
+      and `video` media.
+
+      Note: if you authenticate with an OAuth Token, you will receive the
+      `user_has_liked` key which quickly tells you whether the current user
+      has liked this media item.
+    responses:
+      200:
+        description: OK
+        schema:
+          $ref: '#/definitions/Media'
+    """
+    return jsonify({'method': request.method,
+                    'filename': request.files['file'].filename})
+
+
+@api.route('/media/<int:media_id>', methods=['GET'])
 def media_media_id(media_id):
     """
     Get information about a media object.
@@ -178,7 +212,6 @@ class MediaCommentApi(MethodView):
                     $ref: '#/definitions/Comment'
         """
         return jsonify({})
-
 
     def post(self, media_id):
         """

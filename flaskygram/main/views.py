@@ -143,10 +143,10 @@ def spec():
     ################################################################################
     #                  Host, Base Path, Schemes and Content Types                  #
     ################################################################################
-    host: api.instagram.com
-    basePath: /v1
+    host: localhost:5000
+    basePath: /
     schemes:
-      - https
+      - http
     produces:
       - application/json
     consumes:
