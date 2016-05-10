@@ -11,6 +11,7 @@ from flask.ext.mail import Mail
 from flask.ext.marshmallow import Marshmallow
 from flask.ext.oauthlib.provider import OAuth2Provider
 from flask.ext.security import SQLAlchemyUserDatastore, Security
+from flask.ext.swagger_ui import SwaggerUI
 
 from .models import db, User, Role
 
@@ -27,6 +28,9 @@ security = Security(datastore=user_datastore)
 debug_toolbar = DebugToolbarExtension()
 mail = Mail()
 
+# Setup swagger.ui
+swagger_ui = SwaggerUI()
+
 logger1 = logging.getLogger('flask_oauthlib')
 logger2 = logging.getLogger('oauthlib')
 logger1.setLevel(logging.DEBUG)
@@ -40,6 +44,8 @@ file_handler2.setFormatter(formatter)
 logger1.addHandler(file_handler1)
 logger2.addHandler(file_handler2)
 
+with open(os.path.join(os.path.dirname(__file__), 'swagger.yaml'), 'r') as f:
+    spec_yaml = f.read()
 
 def create_app(config_name):
     """
@@ -64,6 +70,7 @@ def create_app(config_name):
     debug_toolbar.init_app(app)
     ma.init_app(app)
     mail.init_app(app)
+    swagger_ui.init_app(app, spec_yaml=spec_yaml)
 
     from .main import main as main_blueprint
 
