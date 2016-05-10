@@ -4,6 +4,8 @@
 """
 sqlalchemy model
 """
+from datetime import datetime
+
 from flask.ext.security import RoleMixin, UserMixin
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
@@ -17,12 +19,37 @@ roles_users = db.Table('roles_users',
                        db.Column('role_id', db.Integer(), db.ForeignKey('roles.id')))
 
 
+class BaseMixin(object):
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column('created_at', db.DateTime, nullable=False,
+                           default=datetime.now)
+    updated_at = db.Column('updated_at', db.DateTime, nullable=False,
+                           default=datetime.now, onupdate=datetime.now)
+
+    def __repr__(self):
+        return '<{self.__class__.__name__}:{self.id}>'.format(self=self)
+
+
+class CommentMixin(BaseMixin):
+    text = db.Column(db.UnicodeText)
+    is_active = db.Column(db.Boolean())
+
+
+class PostMixin(BaseMixin):
+    title = db.Column(db.Unicode)
+    text = db.Column(db.UnicodeText)
+    is_active = db.Column(db.Boolean())
+
+
 class Role(db.Model, RoleMixin):
     __tablename__ = 'roles'
 
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
+
+    def __repr__(self):
+        return '<{self.__class__.__name__}:{self.name}>'.format(self=self)
 
 
 class User(db.Model, UserMixin):
@@ -204,3 +231,28 @@ class Todo(db.Model):
 
     def __repr__(self):
         return u'<{self.__class__.__name__}: {self.title}>'.format(self=self)
+
+
+class Media(db.Model, BaseMixin):
+    __tablename__ = 'media'
+
+    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False, )
+    user = relationship('User', backref='media')
+
+
+class Relationship(db.Model, BaseMixin):
+    __tablename__ = 'relationships'
+
+
+class Tag(db.Model, BaseMixin):
+    __tablename__ = 'tags'
+
+
+class MediaComment(db.Model, CommentMixin):
+    __tablename__ = 'media_comments'
+
+    media_id = db.Column(db.Integer, ForeignKey('media.id'), nullable=False, )
+    media = relationship('Media', backref='comments')
+
+    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False, )
+    user = relationship('User', backref='media_comments')
