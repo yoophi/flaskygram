@@ -15,9 +15,8 @@ def users_user_id(user_id):
     parameters:
       - $ref: '#/parameters/user_id'
     security:
-      - key: []
       - oauth:
-        - basic
+        - email
     tags:
       - Users
     responses:
@@ -261,7 +260,7 @@ def users_user_id_relationship(user_id):
       - Relationships
     security:
       - oauth:
-        - relationships
+        - email
     parameters:
       - name: action
         in: body
@@ -302,7 +301,7 @@ def me():
         schema:
           $ref: '#/definitions/User'
     security:
-      - petstore_auth:
+      - oauth:
           - email
     """
 

@@ -25,4 +25,5 @@ python-dateutil==2.4.2
 pyyaml==3.11
 shortuuid==0.4.2
 voluptuous==0.8.7
+-e git+https://github.com/yoophi/flask-swagger-ui.git@5a6187b73254c2f6c6bb9ee5f26fbe7fd5ed1a95#egg=Flask_Swagger_UI
 

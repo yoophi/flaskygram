@@ -3,7 +3,7 @@
 {% block main %}
   <p>Client: {{ client.client_id }}</p>
   <p>User: {{ user.username }}</p>
-  <form action="/api/v1.0/oauth/authorize" method="post">
+  <form action="{{ url_for('api.user_authorize') }}" method="post">
     <p>Allow access?</p>
     <input type="hidden" name="client_id" value="{{ client.client_id }}">
     <input type="hidden" name="scope" value="{{ scopes|join(' ') }}">

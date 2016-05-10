@@ -242,7 +242,7 @@ class MediaCommentApi(MethodView):
           * The comment cannot consist of all capital letters.
         security:
           - oauth:
-              - comments
+              - email
         responses:
           200:
             description: OK
@@ -333,7 +333,7 @@ class MediaLikeApi(MethodView):
           - Likes
         security:
           - oauth:
-              - comments
+              - email
         responses:
           200:
             description: OK
