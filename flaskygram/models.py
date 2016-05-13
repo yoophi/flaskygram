@@ -5,7 +5,6 @@
 sqlalchemy model
 """
 from datetime import datetime
-
 from flask.ext.security import RoleMixin, UserMixin
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
@@ -211,13 +210,12 @@ class Token(db.Model):
         return u'<{self.__class__.__name__}: {self.id}>'.format(self=self)
 
 
-class Todo(db.Model):
-    __tablename__ = 'todos'
+class Post(db.Model):
+    __tablename__ = 'posts'
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), unique=True)
-    priority = db.Column(db.Integer, default=3)
-    is_completed = db.Column(db.Boolean(), default=False)
+    text = db.Column(db.UnicodeText, default=False)
 
     user_id = db.Column(
         db.Integer,
@@ -239,6 +237,13 @@ class Media(db.Model, BaseMixin):
     user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False, )
     user = relationship('User', backref='media')
 
+    post_id = db.Column(
+        db.Integer,
+        ForeignKey('posts.id'),
+        nullable=False,
+    )
+    media = relationship('Post', backref='media')
+
 
 class Relationship(db.Model, BaseMixin):
     __tablename__ = 'relationships'
@@ -248,11 +253,11 @@ class Tag(db.Model, BaseMixin):
     __tablename__ = 'tags'
 
 
-class MediaComment(db.Model, CommentMixin):
-    __tablename__ = 'media_comments'
+class PostComment(db.Model, CommentMixin):
+    __tablename__ = 'post_comments'
 
-    media_id = db.Column(db.Integer, ForeignKey('media.id'), nullable=False, )
-    media = relationship('Media', backref='comments')
+    post_id = db.Column(db.Integer, ForeignKey('posts.id'), nullable=False, )
+    post = relationship('Post', backref='comments')
 
     user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False, )
     user = relationship('User', backref='media_comments')
