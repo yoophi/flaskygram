@@ -1,0 +1,14 @@
+<p>This is the auth view.</p>
+
+<oauth site="{{ auth.site }}"
+       client-id="foo"
+       redirect-uri="http://localhost:9000/"
+       profile-uri="{{ auth.profile_url }}"
+       scope="email"
+       template="views/oauth/default.html"
+>
+</oauth>
+
+<div class="token" ng-if="accessToken">
+    with access token {{ accessToken }}
+</div>
