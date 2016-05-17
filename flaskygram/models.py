@@ -240,9 +240,15 @@ class Media(db.Model, BaseMixin):
     post_id = db.Column(
         db.Integer,
         ForeignKey('posts.id'),
-        nullable=False,
+        nullable=True,
     )
-    media = relationship('Post', backref='media')
+    post = relationship('Post', backref='media')
+
+    name = db.Column(db.Unicode)
+    filename = db.Column(db.Unicode)
+    filesize = db.Column(db.Integer)
+    mimetype = db.Column(db.Unicode)
+    dir = db.Column(db.Unicode)
 
 
 class Tag(db.Model, BaseMixin):
