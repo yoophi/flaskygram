@@ -1,5 +1,6 @@
 import os
 
+import shortuuid
 from flask import current_app, jsonify, request
 from flask.views import MethodView
 from werkzeug.utils import secure_filename
@@ -50,15 +51,17 @@ def media_upload():
 
     upload_file = request.files['file']
     if upload_file and allowed_file(upload_file.filename):
-        filename = secure_filename(upload_file.filename)
-        target_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        ext = upload_file.filename.split('.').pop()
+        target_filename = '.'.join([secure_filename(shortuuid.uuid()), ext])
+        target_path = os.path.join(current_app.config['UPLOAD_FOLDER'], target_filename)
         upload_file.save(target_path)
         filesize = get_filesize(target_path)
 
         m = Media(user_id=request.oauth.user.id,
-                  name=upload_file.name,
-                  filename=filename,
+                  name=upload_file.filename,
+                  filename=target_filename,
                   filesize=filesize,
+                  mimetype=upload_file.mimetype,
                   dir=current_app.config['UPLOAD_FOLDER'])
 
         db.session.add(m)
