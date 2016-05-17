@@ -10,6 +10,12 @@ COMMON: &common
   MAIL_USE_SSL: True
   MAIL_USERNAME: username
   MAIL_PASSWORD: password
+  UPLOAD_FOLDER: data
+  ALLOWED_EXTENSIONS:
+    - png
+    - jpg
+    - jpeg
+    - gif
 
 DEFAULT: &default
   <<: *common
@@ -27,4 +33,5 @@ TESTING: &testing
   SERVER_NAME: 'localhost'
   SQLALCHEMY_DATABASE_URI: 'sqlite:///:memory:'
   TESTING: True
+  UPLOAD_FOLDER: /tmp
 

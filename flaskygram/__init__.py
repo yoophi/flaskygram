@@ -70,7 +70,16 @@ def create_app(config_name):
     debug_toolbar.init_app(app)
     ma.init_app(app)
     mail.init_app(app)
-    swagger_ui.init_app(app, spec_yaml=spec_yaml)
+    swagger_ui.init_app(app, spec_yaml=spec_yaml, params={
+        'OAUTH_CLIENT_ID': 'swagger',
+        'OAUTH_CLIENT_SECRET': 'secret'
+    })
+
+    # 업로드 경로를 절대경로로 변경
+    UPLOAD_FOLDER = app.config.get('UPLOAD_FOLDER', 'data')
+    if UPLOAD_FOLDER[0] != os.sep:
+        UPLOAD_FOLDER = os.path.join(app.root_path, UPLOAD_FOLDER)
+        app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
     from .main import main as main_blueprint
 
