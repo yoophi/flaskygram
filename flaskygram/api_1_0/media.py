@@ -1,9 +1,18 @@
-from flask import jsonify, request
+import os
+
+from flask import current_app, jsonify, request
 from flask.views import MethodView
+from werkzeug.utils import secure_filename
+
+from flaskygram.api_1_0.schema import MediaSchema, media_schema
 from . import api
+from .. import oauth
+from ..api_1_0.response import error_response, api_response
+from ..models import db, Media
 
 
 @api.route('/media/upload', methods=['POST'])
+@oauth.require_oauth('email')
 def media_upload():
     """
     Upload file
@@ -34,8 +43,35 @@ def media_upload():
         schema:
           $ref: '#/definitions/Media'
     """
-    return jsonify({'method': request.method,
-                    'filename': request.files['file'].filename})
+
+    def allowed_file(filename):
+        return '.' in filename and \
+               filename.rsplit('.', 1)[1] in current_app.config['ALLOWED_EXTENSIONS']
+
+    upload_file = request.files['file']
+    if upload_file and allowed_file(upload_file.filename):
+        filename = secure_filename(upload_file.filename)
+        target_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        upload_file.save(target_path)
+        filesize = get_filesize(target_path)
+
+        m = Media(user_id=request.oauth.user.id,
+                  name=upload_file.name,
+                  filename=filename,
+                  filesize=filesize,
+                  dir=current_app.config['UPLOAD_FOLDER'])
+
+        db.session.add(m)
+        db.session.commit()
+
+        # return jsonify(media_schema.load(media).data)
+        return api_response(media_schema.dump(m).data)
+
+    return error_response(status_code=400)
+
+
+def get_filesize(target_path):
+    return os.stat(target_path).st_size
 
 
 @api.route('/media/<int:media_id>', methods=['GET'])

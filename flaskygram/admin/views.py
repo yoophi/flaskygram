@@ -1,14 +1,15 @@
 from flask.ext.admin.contrib import sqla
 
 from . import admin
-from ..models import db, User, Role, Client, Token, Media, Relationship, Tag, MediaComment
+from ..models import db, User, Role, Client, Token, Media, Relationship, Tag, Post, PostComment
 
 admin.add_view(sqla.ModelView(User, session=db.session, name='User', category='User'))
 admin.add_view(sqla.ModelView(Role, session=db.session, name='Role', category='User'))
 
 #
 admin.add_view(sqla.ModelView(Media, session=db.session, name='Media', category='Media'))
-admin.add_view(sqla.ModelView(MediaComment, session=db.session, name='MediaComment', category='Media'))
+admin.add_view(sqla.ModelView(Post, session=db.session, name='Post', category='Media'))
+admin.add_view(sqla.ModelView(PostComment, session=db.session, name='PostComment', category='Media'))
 admin.add_view(sqla.ModelView(Tag, session=db.session, name='Tag', category='Media'))
 
 #

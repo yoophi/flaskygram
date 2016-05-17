@@ -24,9 +24,14 @@ class UserSchema(ma.Schema):
         fields = ('id', 'email')
 
 
+class MediaSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'name', 'filesize', 'filename', 'mimetype', 'user', 'created_at')
+
+    user = fields.Nested(UserSchema)
+
+
 user_schema = UserSchema()
+media_schema = MediaSchema()
 
 
-# @app.route('/foo')
-# def get_foo():
-#     raise InvalidUsage('This view is gone', status_code=410)
