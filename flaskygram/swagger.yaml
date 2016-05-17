@@ -222,6 +222,23 @@ definitions:
   Media:
     type: object
     properties:
+      created_at:
+        description: datetime (iso)
+        type: string
+      filesize:
+        type: integer
+      id:
+        type: integer
+      mimetype:
+        type: string
+      shortcode:
+        description: shortcode for media (unique)
+        type: string
+      user:
+        $ref: '#/definitions/MiniProfile'
+  Post:
+    type: object
+    properties:
       created_time:
         description: Epoc time (ms)
         type: integer

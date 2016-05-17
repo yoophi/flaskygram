@@ -249,6 +249,7 @@ class Media(db.Model, BaseMixin):
     filesize = db.Column(db.Integer)
     mimetype = db.Column(db.Unicode)
     dir = db.Column(db.Unicode)
+    shortcode = db.Column(db.Unicode)
 
 
 class Tag(db.Model, BaseMixin):

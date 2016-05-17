@@ -1,14 +1,15 @@
+# -*- coding: utf8 -*-
 import os
 
 import shortuuid
-from flask import current_app, jsonify, request
+from flask import current_app, jsonify, request, send_from_directory, abort
 from flask.views import MethodView
 from werkzeug.utils import secure_filename
 
-from flaskygram.api_1_0.schema import MediaSchema, media_schema
 from . import api
 from .. import oauth
 from ..api_1_0.response import error_response, api_response
+from ..api_1_0.schema import media_schema
 from ..models import db, Media
 
 
@@ -51,8 +52,9 @@ def media_upload():
 
     upload_file = request.files['file']
     if upload_file and allowed_file(upload_file.filename):
+        shortcode = shortuuid.uuid()
         ext = upload_file.filename.split('.').pop()
-        target_filename = '.'.join([secure_filename(shortuuid.uuid()), ext])
+        target_filename = '.'.join([secure_filename(shortcode), ext])
         target_path = os.path.join(current_app.config['UPLOAD_FOLDER'], target_filename)
         upload_file.save(target_path)
         filesize = get_filesize(target_path)
@@ -62,6 +64,7 @@ def media_upload():
                   filename=target_filename,
                   filesize=filesize,
                   mimetype=upload_file.mimetype,
+                  shortcode=shortcode,
                   dir=current_app.config['UPLOAD_FOLDER'])
 
         db.session.add(m)
@@ -104,7 +107,8 @@ def media_media_id(media_id):
         schema:
           $ref: '#/definitions/Media'
     """
-    return jsonify({})
+    media = Media.query.get_or_404(media_id)
+    return api_response(media_schema.dump(media).data)
 
 
 @api.route('/media1/<shortcode>')
@@ -133,7 +137,11 @@ def media1_shortcode(shortcode):
         schema:
           $ref: '#/definitions/Media'
     """
-    return jsonify({})
+    media = Media.query.filter(Media.shortcode == shortcode).first()
+    if not media:
+        abort(404)
+
+    return api_response(media_schema.dump(media).data)
 
 
 @api.route('/media/search')
@@ -221,7 +229,7 @@ def media_popular():
     return jsonify({})
 
 
-class MediaCommentApi(MethodView):
+class PostCommentApi(MethodView):
     def get(self, media_id):
         """
         Get a list of recent comments on a media object.
@@ -416,5 +424,31 @@ class MediaLikeApi(MethodView):
         return jsonify({})
 
 
-api.add_url_rule('/media/<media_id>/comments', view_func=MediaCommentApi.as_view('media_comment'))
+@api.route('/m/<shortcode>')
+def media_file(shortcode):
+    """
+    shortcode 에 해당하는 미디어 파일을 전송한다.
+    ---
+    parameters:
+      - name: shortcode
+        in: path
+        description: The media shortcode
+        type: string
+        required: true
+    tags:
+      - Media
+    responses:
+      200:
+        description: OK
+        schema:
+          type: file
+    """
+    media = Media.query.filter(Media.shortcode == shortcode).first()
+    if not media:
+        abort(404)
+
+    return send_from_directory(media.dir, media.filename)
+
+
+api.add_url_rule('/media/<media_id>/comments', view_func=PostCommentApi.as_view('media_comment'))
 api.add_url_rule('/media/<media_id>/likes', view_func=MediaLikeApi.as_view('media_like'))

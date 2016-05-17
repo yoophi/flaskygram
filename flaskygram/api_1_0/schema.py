@@ -26,7 +26,7 @@ class UserSchema(ma.Schema):
 
 class MediaSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'name', 'filesize', 'filename', 'mimetype', 'user', 'created_at')
+        fields = ('id', 'shortcode', 'filesize', 'mimetype', 'user', 'created_at')
 
     user = fields.Nested(UserSchema)
 
