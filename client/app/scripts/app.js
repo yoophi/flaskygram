@@ -30,15 +30,15 @@ angular
         controller: 'AboutCtrl',
         controllerAs: 'about'
       })
-      .when('/todo', {
-        templateUrl: 'views/todo.html',
-        controller: 'TodoCtrl',
-        controllerAs: 'todoList'
-      })
       .when('/auth', {
         templateUrl: 'views/auth.html',
         controller: 'AuthCtrl',
         controllerAs: 'auth'
+      })
+      .when('/media', {
+        templateUrl: 'views/media.html',
+        controller: 'MediaCtrl',
+        controllerAs: 'media'
       })
       .when('/access_token=:accessToken', {
         template: '',
