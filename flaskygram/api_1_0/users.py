@@ -8,7 +8,7 @@ from .. import oauth
 
 
 @api.route('/users/<user_id>')
-def users_user_id(user_id):
+def user_get(user_id):
     """
     Get basic information about a user.
     ---
@@ -68,7 +68,7 @@ def users_self_feed():
 
 
 @api.route('/users/<user_id>/media/recent')
-def users_user_id_media_recent(user_id):
+def user_media_recent(user_id):
     """
     Get the most recent media published by a user.
     ---
@@ -182,7 +182,7 @@ def users_search():
 
 
 @api.route('/users/<user_id>/follows')
-def users_user_id_follows(user_id):
+def user_follows(user_id):
     """
     Get the list of users this user follows.
     ---
@@ -204,7 +204,7 @@ def users_user_id_follows(user_id):
 
 
 @api.route('/users/<user_id>/followed-by')
-def users_user_id_followed_by(user_id):
+def user_followed_by(user_id):
     """
     Get the list of users this user is followed by.
     ---
@@ -250,7 +250,7 @@ def users_self_requested_by():
 
 
 @api.route('/users/<user_id>/relationship', methods=['POST'])
-def users_user_id_relationship(user_id):
+def user_relationship(user_id):
     """
     Modify the relationship between the current user and thetarget user.
     ---
@@ -288,7 +288,7 @@ def users_user_id_relationship(user_id):
 
 @api.route('/users/self')
 @oauth.require_oauth('email')
-def me():
+def users_self():
     """
     현재 사용자의 정보 가져오기
     ---
@@ -308,3 +308,20 @@ def me():
     user = request.oauth.user
 
     return api_response(user_schema.dump(user).data)
+
+
+@api.route('/users', methods=['POST'])
+def user_create():
+    """
+    회원 가입하기
+    ---
+    tags:
+      - Users
+    responses:
+      '200':
+        description: 회원가입 성공
+        schema:
+          $ref: '#/definitions/User'
+    :return:
+    """
+    pass
