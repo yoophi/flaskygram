@@ -73,6 +73,21 @@
   ga('send', 'pageview');
 </script>
 
+<script type="text/javascript">
+  FileAPI = {
+    debug: true,
+    //forceLoad: true, html5: false //to debug flash in HTML5 browsers
+    //wrapInsideDiv: true, //experimental for fixing css issues
+    //only one of jsPath or jsUrl.
+    //jsPath: '/js/FileAPI.min.js/folder/',
+    //jsUrl: 'yourcdn.com/js/FileAPI.min.js',
+
+    //only one of staticPath or flashUrl.
+    //staticPath: '/flash/FileAPI.flash.swf/folder/'
+    //flashUrl: 'yourcdn.com/js/FileAPI.flash.swf'
+  };
+</script>
+
 <!-- build:js(.) scripts/vendor.js -->
 <!-- bower:js -->
 <script src="bower_components/jquery/dist/jquery.js"></script>
@@ -87,6 +102,7 @@
 <script src="bower_components/ngstorage/ngStorage.js"></script>
 <script src="bower_components/jsrsasign/jsrsasign-latest-all-min.js"></script>
 <script src="bower_components/oauth-ng/dist/oauth-ng.js"></script>
+<script src="bower_components/ng-file-upload/ng-file-upload.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
 
