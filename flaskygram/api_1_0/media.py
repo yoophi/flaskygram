@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 from . import api
 from .. import oauth
 from ..api_1_0.response import error_response, api_response
-from ..api_1_0.schema import media_schema
+from ..api_1_0.schema import media_schema, media_items_schema
 from ..models import db, Media
 
 
@@ -74,6 +74,31 @@ def media_upload():
         return api_response(media_schema.dump(m).data)
 
     return error_response(status_code=400)
+
+
+@api.route('/media/draft', methods=['GET'])
+@oauth.require_oauth('email')
+def media_draft():
+    """
+    아직 Post 로 작성되지 않은 Media 들을 보며준다
+    ---
+    parameters: []
+    tags:
+      - Media
+    responses:
+      200:
+        description: OK
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/Media'
+    security:
+      - oauth:
+        - email
+    """
+    user = request.oauth.user
+    m_items = Media.query.filter(Media.user_id == user.id).order_by(Media.id.desc())
+    return api_response(media_items_schema.dump(m_items).data)
 
 
 def get_filesize(target_path):

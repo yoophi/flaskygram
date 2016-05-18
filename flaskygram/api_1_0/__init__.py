@@ -9,4 +9,4 @@ def api_before_app_first_request():
     SwaggerUI().spec["securityDefinitions"]["oauth"]["authorizationUrl"] = url_for('api.user_authorize', _external=True)
 
 
-from . import authentication, location, media, users, tag
+from . import authentication, location, media, posts, tags, users

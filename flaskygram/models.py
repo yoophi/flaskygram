@@ -210,10 +210,9 @@ class Token(db.Model):
         return u'<{self.__class__.__name__}: {self.id}>'.format(self=self)
 
 
-class Post(db.Model):
+class Post(db.Model, BaseMixin):
     __tablename__ = 'posts'
 
-    id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), unique=True)
     text = db.Column(db.UnicodeText, default=False)
 
@@ -224,11 +223,8 @@ class Post(db.Model):
     )
     user = relationship('User', backref='todos')
 
-    created_at = db.Column(db.DateTime())
-    updated_at = db.Column(db.DateTime())
-
     def __repr__(self):
-        return u'<{self.__class__.__name__}: {self.title}>'.format(self=self)
+        return u'<{self.__class__.__name__}: {self.id}>'.format(self=self)
 
 
 class Media(db.Model, BaseMixin):

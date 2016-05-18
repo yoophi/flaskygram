@@ -26,12 +26,24 @@ class UserSchema(ma.Schema):
 
 class MediaSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'shortcode', 'filesize', 'mimetype', 'user', 'created_at')
+        fields = ('id', 'shortcode', 'filesize', 'mimetype', 'user', 'created_at', '_links')
 
     user = fields.Nested(UserSchema)
+    _links = ma.Hyperlinks({
+        'self': ma.URLFor('api.media_file', shortcode='<shortcode>'),
+    })
+
+class PostSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'title', 'text', 'user', 'media')
+
+    user = fields.Nested(UserSchema)
+    media = fields.Nested(MediaSchema, many=True)
 
 
-user_schema = UserSchema()
+media_items_schema = MediaSchema(many=True)
 media_schema = MediaSchema()
+post_schema = PostSchema()
+user_schema = UserSchema()
 
 
