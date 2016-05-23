@@ -1,7 +1,8 @@
 import json
+import os
 
-from flask import url_for
-from flask.ext.fixtures import FixturesMixin
+from flask import url_for, current_app
+from flask.ext.fixtures import FixturesMixin, load_fixtures, loaders
 from flask.ext.testing import TestCase
 
 from flaskygram import create_app, db
@@ -37,3 +38,25 @@ class BaseTestCase(TestCase, FixturesMixin):
     def test_get_oauth2_token(self):
         token = self.get_oauth2_token()
         self.assertIsNotNone(token)
+
+
+def load_fixtures_from_file(fixtures):
+    """
+    :param fixtures:
+    :return:
+    """
+    fixtures_dirs = current_app.config['FIXTURES_DIRS']
+    if not isinstance(fixtures, list):
+        _fixtures = [fixtures]
+    else:
+        _fixtures = fixtures
+
+    for filename in _fixtures:
+        for directory in fixtures_dirs:
+            filepath = os.path.join(directory, filename)
+            if os.path.exists(filepath):
+                # TODO load the data into the database
+                load_fixtures(db, loaders.load(filepath))
+                break
+        else:
+            raise IOError("Error loading '{0}'. File could not be found".format(filename))
