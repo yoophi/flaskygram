@@ -1,5 +1,6 @@
 from flask import jsonify
-from . import api
+
+from flaskygram.core.api_1_0 import api
 
 
 @api.route('/locations/<location_id>')

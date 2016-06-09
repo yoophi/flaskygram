@@ -4,12 +4,13 @@ import json
 from flask import request
 from voluptuous import Schema, Any, MultipleInvalid
 
-from . import api
-from .response import api_response, error_response
-from .schema import post_schema
-from .. import oauth
-from ..models import Media, Post
+from flaskygram.core.api_1_0 import api
+from flaskygram.core.api_1_0.response import api_response, error_response
+from flaskygram.core.api_1_0.schema import post_schema
 from flaskygram.database import db
+from flaskygram.extensions import oauth
+from flaskygram.modules.media.models import Media
+from flaskygram.modules.posts.models import Post
 
 
 @api.route('/posts', methods=['POST'])

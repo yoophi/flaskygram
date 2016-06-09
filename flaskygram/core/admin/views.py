@@ -2,7 +2,10 @@ from flask.ext.admin.contrib import sqla
 
 from . import admin
 from ..models import User, Token, Media, Relationship, Tag, PostComment
-from flaskygram.modules.models import Post, Media, Tag, PostComment
+from flaskygram.modules.models import PostComment
+from flaskygram.modules.tags.models import Tag
+from flaskygram.modules.media.models import Media
+from flaskygram.modules.posts.models import Post, PostComment
 from flaskygram.core.api_1_0.models import Client, Token
 from flaskygram.core.accounts.models import Role, User, Relationship
 from flaskygram.database import db

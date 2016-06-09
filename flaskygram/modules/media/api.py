@@ -6,12 +6,12 @@ from flask import current_app, jsonify, request, send_from_directory, abort
 from flask.views import MethodView
 from werkzeug.utils import secure_filename
 
-from . import api
-from .. import oauth
-from ..api_1_0.response import error_response, api_response
-from ..api_1_0.schema import media_schema, media_items_schema
-from ..models import Media
+from flaskygram.core.api_1_0 import api
+from flaskygram.core.api_1_0.response import error_response, api_response
+from flaskygram.core.api_1_0.schema import media_schema, media_items_schema
 from flaskygram.database import db
+from flaskygram.extensions import oauth
+from flaskygram.modules.media.models import Media
 
 
 @api.route('/media/upload', methods=['POST'])

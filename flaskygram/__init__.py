@@ -81,6 +81,10 @@ def create_app(config_name='default'):
     from flaskygram.core.api_1_0 import api as api_1_0_blueprint
 
     import flaskygram.core.accounts.api
+    import flaskygram.modules.locations.api
+    import flaskygram.modules.media.api
+    import flaskygram.modules.posts.api
+    import flaskygram.modules.tags.api
 
     app.register_blueprint(api_1_0_blueprint, url_prefix='/v1')
 
