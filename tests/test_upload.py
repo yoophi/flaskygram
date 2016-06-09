@@ -8,8 +8,8 @@ from flaskygram.models import Media
 from tests import BaseTestCase
 
 
-class UploadTest(BaseTestCase):
-    def test_users_self(self):
+class MediaTest(BaseTestCase):
+    def test_upload(self):
         res = self.client.post(url_for('api.media_upload'),
                                data=dict(
                                    file=(StringIO("123456789 " * 1000), 'test.png'),
@@ -17,6 +17,6 @@ class UploadTest(BaseTestCase):
                                headers={
                                    'Authorization': 'Bearer %s' % self.get_oauth2_token()
                                })
-        print res.status_code
-        print res.data
-        print Media.query.all()
+
+        self.assert200(res)
+        self.assertEqual(1, Media.query.count())

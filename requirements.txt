@@ -27,3 +27,4 @@ pyyaml==3.11
 shortuuid==0.4.2
 voluptuous==0.8.7
 -e git+https://github.com/yoophi/flask-swagger-ui.git@4e107ebc968b7de859420400ba29265f1cdb90b0#egg=Flask_Swagger_UI
+-e git+https://github.com/yoophi/markwiki.git@dac4b3dda308e799e80acc485c2ef726e584a2b7#egg=MarkWiki

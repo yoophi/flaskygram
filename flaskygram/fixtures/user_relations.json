@@ -1,0 +1,19 @@
+[
+  {
+    "table": "users",
+    "records": [
+      {
+        "id": 2,
+        "email": "a@gmail.com",
+        "password": "secret",
+        "active": true
+      },
+      {
+        "id": 3,
+        "email": "b@gmail.com",
+        "password": "secret",
+        "active": true
+      }
+    ]
+  }
+]
