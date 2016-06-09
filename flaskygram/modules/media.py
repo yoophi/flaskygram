@@ -10,7 +10,8 @@ from . import api
 from .. import oauth
 from ..api_1_0.response import error_response, api_response
 from ..api_1_0.schema import media_schema, media_items_schema
-from ..models import db, Media
+from ..models import Media
+from flaskygram.database import db
 
 
 @api.route('/media/upload', methods=['POST'])

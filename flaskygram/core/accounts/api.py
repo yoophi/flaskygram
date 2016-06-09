@@ -1,10 +1,10 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+from flask import jsonify, request
 
-from flask import request, jsonify
-from . import api
-from .schema import user_schema
-from .response import api_response, InvalidUsage
-from .. import oauth
+from flaskygram.core.api_1_0 import api
+from flaskygram.core.api_1_0.response import api_response
+from flaskygram.core.api_1_0.schema import user_schema
+from flaskygram.extensions import oauth
 
 
 @api.route('/users/<user_id>')

@@ -1,6 +1,6 @@
 from marshmallow import fields
 
-from .. import ma
+from flaskygram.extensions import ma
 
 
 class MetaSchema(ma.Schema):
@@ -33,6 +33,7 @@ class MediaSchema(ma.Schema):
         'self': ma.URLFor('api.media_file', shortcode='<shortcode>'),
     })
 
+
 class PostSchema(ma.Schema):
     class Meta:
         fields = ('id', 'title', 'text', 'user', 'media')
@@ -45,5 +46,3 @@ media_items_schema = MediaSchema(many=True)
 media_schema = MediaSchema()
 post_schema = PostSchema()
 user_schema = UserSchema()
-
-

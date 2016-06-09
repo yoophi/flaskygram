@@ -8,7 +8,8 @@ from . import api
 from .response import api_response, error_response
 from .schema import post_schema
 from .. import oauth
-from ..models import db, Media, Post
+from ..models import Media, Post
+from flaskygram.database import db
 
 
 @api.route('/posts', methods=['POST'])

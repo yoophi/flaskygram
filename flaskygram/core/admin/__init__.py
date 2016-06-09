@@ -4,7 +4,7 @@ from flask import Flask, redirect
 from flask.ext.admin import Admin
 from flask.ext.config_helper import Config
 
-from ..models import db
+from flaskygram.database import db
 
 admin = Admin()
 config = Config()

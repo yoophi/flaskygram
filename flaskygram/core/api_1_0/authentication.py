@@ -6,13 +6,16 @@ oauth implementation
 """
 
 from datetime import datetime, timedelta
+
 from flask import request, render_template, jsonify, redirect
 from flask.ext.login import current_user, login_required
 from flask.ext.security.utils import verify_password
 
-from . import api
-from .. import oauth, db
-from ..models import Client, Grant, User, Token
+from flaskygram.core.accounts.models import User
+from flaskygram.core.api_1_0 import api
+from flaskygram.core.api_1_0.models import Client, Grant, Token
+from flaskygram.extensions import oauth
+
 
 @oauth.clientgetter
 def load_user_client(client_id):

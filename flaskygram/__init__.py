@@ -4,32 +4,19 @@ import logging
 import os
 
 from flask import Flask
-from flask.ext.config_helper import Config
-from flask.ext.cors import CORS
-from flask.ext.debugtoolbar import DebugToolbarExtension
-from flask.ext.mail import Mail
-from flask.ext.marshmallow import Marshmallow
-from flask.ext.oauthlib.provider import OAuth2Provider
 from flask.ext.security import SQLAlchemyUserDatastore, Security
-from flask.ext.swagger_ui import SwaggerUI
 
-from .models import db, User, Role
+from flaskygram.core.accounts.models import User, Role
+from flaskygram.database import db
+from flaskygram.extensions import config, oauth, cors, ma, debug_toolbar, mail, swagger_ui, admin
 
 __version__ = '0.1'
-
-config = Config()
-oauth = OAuth2Provider()
-cors = CORS()
-ma = Marshmallow()
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(datastore=user_datastore)
-debug_toolbar = DebugToolbarExtension()
-mail = Mail()
 
 # Setup swagger.ui
-swagger_ui = SwaggerUI()
 
 logger1 = logging.getLogger('flask_oauthlib')
 logger2 = logging.getLogger('oauthlib')
@@ -44,16 +31,10 @@ file_handler2.setFormatter(formatter)
 logger1.addHandler(file_handler1)
 logger2.addHandler(file_handler2)
 
-with open(os.path.join(os.path.dirname(__file__), 'swagger.yaml'), 'r') as f:
+with open(os.path.join(os.path.dirname(__file__), 'swagger', 'swagger.yaml'), 'r') as f:
     spec_yaml = f.read()
 
-def create_app(config_name):
-    """
-    :param config_name: developtment, production or testing
-    :return: flask application
-
-    flask application generator
-    """
+def create_app_min(config_name='default'):
     template_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
     app = Flask(__name__, template_folder=template_folder)
 
@@ -62,6 +43,17 @@ def create_app(config_name):
                          file_name='app.yml',
                          search_paths=[os.path.dirname(app.root_path)])
     app.config.from_heroku(keys=['SQLALCHEMY_DATABASE_URI', ])
+
+    return app
+
+def create_app(config_name='default'):
+    """
+    :param config_name: developtment, production or testing
+    :return: flask application
+
+    flask application generator
+    """
+    app = create_app_min(config_name)
 
     cors.init_app(app, resources={r"/v1/*": {"origins": "*"}})
     db.init_app(app)
@@ -74,6 +66,7 @@ def create_app(config_name):
         'OAUTH_CLIENT_ID': 'swagger',
         'OAUTH_CLIENT_SECRET': 'secret'
     })
+    admin.init_app(app)
 
     # 업로드 경로를 절대경로로 변경
     UPLOAD_FOLDER = app.config.get('UPLOAD_FOLDER', 'data')
@@ -81,12 +74,17 @@ def create_app(config_name):
         UPLOAD_FOLDER = os.path.join(app.root_path, UPLOAD_FOLDER)
         app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-    from .main import main as main_blueprint
+    from flaskygram.core import main as main_blueprint
 
     app.register_blueprint(main_blueprint)
 
-    from .api_1_0 import api as api_1_0_blueprint
+    from flaskygram.core.api_1_0 import api as api_1_0_blueprint
+
+    import flaskygram.core.accounts.api
 
     app.register_blueprint(api_1_0_blueprint, url_prefix='/v1')
+
+    import flaskygram.core.accounts.admin
+    import flaskygram.core.api_1_0.admin
 
     return app
