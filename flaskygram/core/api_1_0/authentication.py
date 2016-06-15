@@ -15,6 +15,7 @@ from flaskygram.core.accounts.models import User
 from flaskygram.core.api_1_0 import api
 from flaskygram.core.api_1_0.models import Client, Grant, Token
 from flaskygram.extensions import oauth
+from flaskygram.database import db
 
 
 @oauth.clientgetter

@@ -1,9 +1,13 @@
 # -*- coding: utf8 -*-
 import os
+from datetime import datetime
+from io import BytesIO
+from os import path
 
 import shortuuid
 from flask import current_app, jsonify, request, send_from_directory, abort
 from flask.views import MethodView
+from s3_saver import S3Saver
 from werkzeug.utils import secure_filename
 
 from flaskygram.core.api_1_0 import api
@@ -11,12 +15,13 @@ from flaskygram.core.api_1_0.response import error_response, api_response
 from flaskygram.core.api_1_0.schema import media_schema, media_items_schema
 from flaskygram.database import db
 from flaskygram.extensions import oauth
+from flaskygram.library.get_setting_value import get_setting_value
 from flaskygram.modules.media.models import Media
 
 
-@api.route('/media/upload', methods=['POST'])
+@api.route('/media/upload1', methods=['POST'])
 @oauth.require_oauth('email')
-def media_upload():
+def media_upload1():
     """
     Upload file
     ---
@@ -73,6 +78,96 @@ def media_upload():
 
         # return jsonify(media_schema.load(media).data)
         return api_response(media_schema.dump(m).data)
+
+    return error_response(status_code=400)
+
+
+@api.route('/media/upload', methods=['POST'])
+@oauth.require_oauth('email')
+def media_upload():
+    """
+    Upload file
+    ---
+    consumes:
+      - multipart/form-data
+    parameters:
+      - name: file
+        in: formData
+        description: The file to upload
+        type: file
+        required: true
+    produces:
+      - application/json
+    tags:
+      - Media
+    description: |
+      Get information about a media object.
+      The returned type key will allow you to differentiate between `image`
+      and `video` media.
+
+      Note: if you authenticate with an OAuth Token, you will receive the
+      `user_has_liked` key which quickly tells you whether the current user
+      has liked this media item.
+    responses:
+      200:
+        description: OK
+        schema:
+          $ref: '#/definitions/Media'
+    """
+
+    def allowed_file(filename):
+        return '.' in filename and \
+               filename.rsplit('.', 1)[1] in current_app.config['ALLOWED_EXTENSIONS']
+
+    def prefix_file_utcnow2(model, file_data):
+        parts = path.splitext(file_data.filename)
+        return secure_filename('%s%s' % (datetime.utcnow().strftime('%Y-%m-%d-%H-%M-%S'), parts[1]))
+
+    media = Media()
+    media.user_id = request.oauth.user.id
+
+    upload_file = request.files.get('file')
+    if upload_file and allowed_file(upload_file.filename):
+        # Initialise s3-saver.
+        image_saver = S3Saver(
+            storage_type=get_setting_value('USE_S3') and 's3' or None,
+            bucket_name=get_setting_value('S3_BUCKET_NAME'),
+            access_key_id=get_setting_value('AWS_ACCESS_KEY_ID'),
+            access_key_secret=get_setting_value('AWS_SECRET_ACCESS_KEY'),
+            field_name='image',
+            storage_type_field='image_storage_type',
+            bucket_name_field='image_storage_bucket_name',
+            base_path=get_setting_value('UPLOADS_FOLDER'),
+            static_root_parent=path.abspath(get_setting_value('PROJECT_ROOT')))
+
+        current_app.logger.info(upload_file)
+
+        if upload_file.filename:
+            filename = prefix_file_utcnow2(media, upload_file)
+
+            # Best to pass in a BytesIO to S3Saver, containing the
+            # contents of the file to save. A file from any source
+            # (e.g. in a Flask form submission, a
+            # werkzeug.datastructures.FileStorage object; or if
+            # reading in a local file in a shell script, perhaps a
+            # Python file object) can be easily converted to BytesIO.
+            # This way, S3Saver isn't coupled to a Werkzeug POST
+            # request or to anything else. It just wants the file.
+            temp_file = BytesIO()
+            upload_file.save(temp_file)
+
+            # Save the file. Depending on how S3Saver was initialised,
+            # could get saved to local filesystem or to S3.
+            image_saver.save(
+                temp_file,
+                get_setting_value('THINGY_IMAGE_RELATIVE_PATH') + filename,
+                media)
+
+            db.session.add(media)
+            db.session.commit()
+            current_app.logger.info('Thingy saved success')
+
+        return api_response(media_schema.dump(media).data)
 
     return error_response(status_code=400)
 
