@@ -26,12 +26,18 @@ class UserSchema(ma.Schema):
 
 class MediaSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'shortcode', 'filesize', 'mimetype', 'user', 'created_at', '_links')
+        fields = ('id', 'user', 'created_at', 'image')
 
     user = fields.Nested(UserSchema)
-    _links = ma.Hyperlinks({
-        'self': ma.URLFor('api.media_file', shortcode='<shortcode>'),
-    })
+    image = fields.Method('get_image_url')
+
+    def get_image_url(self, obj):
+        if obj.image_url_sa:
+            return {
+                'height': 0,
+                'width': 0,
+                'url': obj.image_url_sa
+            }
 
 
 class PostSchema(ma.Schema):
