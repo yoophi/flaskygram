@@ -2,6 +2,7 @@
 # coding: utf-8
 import logging
 import os
+from os import path
 
 from flask import Flask
 from flask.ext.security import SQLAlchemyUserDatastore, Security
@@ -16,8 +17,9 @@ __version__ = '0.1'
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(datastore=user_datastore)
 
-# Setup swagger.ui
-
+################################################################################
+# Setup Loggers
+################################################################################
 logger1 = logging.getLogger('flask_oauthlib')
 logger2 = logging.getLogger('oauthlib')
 logger1.setLevel(logging.DEBUG)
@@ -34,9 +36,14 @@ logger2.addHandler(file_handler2)
 with open(os.path.join(os.path.dirname(__file__), 'swagger', 'swagger.yaml'), 'r') as f:
     spec_yaml = f.read()
 
+
 def create_app_min(config_name='default'):
-    template_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
-    app = Flask(__name__, template_folder=template_folder)
+    _current_dir = path.dirname(path.abspath(__file__))
+    _static_folder = path.abspath(path.join(_current_dir, 'static'))
+    _template_folder = path.join(_current_dir, 'templates')
+    app = Flask(__name__,
+                template_folder=_template_folder,
+                static_folder=_static_folder)
 
     config.init_app(app)
     app.config.from_yaml(config_name=config_name,
@@ -44,7 +51,20 @@ def create_app_min(config_name='default'):
                          search_paths=[os.path.dirname(app.root_path)])
     app.config.from_heroku(keys=['SQLALCHEMY_DATABASE_URI', ])
 
+    app.config['PROJECT_ROOT'] = app.root_path
+    app.config['UPLOADS_FOLDER'] = path.join(
+        _static_folder,
+        app.config['UPLOADS_RELATIVE_PATH']).rstrip('/')
+    app.config['MEDIA_FOLDER'] = path.join(
+        path.dirname(_static_folder),
+        app.config['MEDIA_URL'].lstrip('/')).rstrip('/')
+    app.config['MEDIA_THUMBNAIL_FOLDER'] = path.join(
+        _static_folder,
+        app.config['MEDIA_THUMBNAIL_URL']).rstrip('/')
+    app.config['THUMBNAIL_S3_STATIC_ROOT_PARENT'] = app.root_path
+
     return app
+
 
 def create_app(config_name='default'):
     """
@@ -68,12 +88,6 @@ def create_app(config_name='default'):
     })
     admin.init_app(app)
 
-    # 업로드 경로를 절대경로로 변경
-    UPLOAD_FOLDER = app.config.get('UPLOAD_FOLDER', 'data')
-    if UPLOAD_FOLDER[0] != os.sep:
-        UPLOAD_FOLDER = os.path.join(app.root_path, UPLOAD_FOLDER)
-        app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
     from flaskygram.core import main as main_blueprint
 
     app.register_blueprint(main_blueprint)
@@ -90,5 +104,6 @@ def create_app(config_name='default'):
 
     import flaskygram.core.accounts.admin
     import flaskygram.core.api_1_0.admin
+    import flaskygram.modules.media.admin
 
     return app
