@@ -2,8 +2,8 @@ import json
 import os
 
 from flask import url_for, current_app
-from flask.ext.fixtures import FixturesMixin, load_fixtures, loaders
-from flask.ext.testing import TestCase
+from flask_fixtures import FixturesMixin, load_fixtures, loaders
+from flask_testing import TestCase
 
 from flaskygram import create_app, db
 

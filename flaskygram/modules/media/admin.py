@@ -1,6 +1,6 @@
 from os import path
 
-from flask.ext.admin.contrib import sqla
+from flask_admin.contrib import sqla
 from flask_admin_s3_upload import S3ImageUploadField
 
 from flaskygram.database import db

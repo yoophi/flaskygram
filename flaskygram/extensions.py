@@ -1,17 +1,13 @@
-from flask.ext.admin import Admin
-from flask.ext.config_helper import Config
-from flask.ext.cors import CORS
-from flask.ext.debugtoolbar import DebugToolbarExtension
-from flask.ext.mail import Mail
-from flask.ext.marshmallow import Marshmallow
-from flask.ext.oauthlib.provider import OAuth2Provider
-from flask.ext.swagger_ui import SwaggerUI
+from flask_admin import Admin
+from flask_cors import CORS
+from flask_debugtoolbar import DebugToolbarExtension
+from flask_mail import Mail
+from flask_marshmallow import Marshmallow
+from flask_oauthlib.provider import OAuth2Provider
 
 admin = Admin()
-config = Config()
 cors = CORS()
 debug_toolbar = DebugToolbarExtension()
 ma = Marshmallow()
 mail = Mail()
 oauth = OAuth2Provider()
-swagger_ui = SwaggerUI()

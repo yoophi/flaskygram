@@ -1,7 +1,7 @@
 from datetime import datetime
 from os import path
 
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 
 
 def prefix_file_utcnow(model, file_data):

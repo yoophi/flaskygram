@@ -1,4 +1,4 @@
-from flask.ext.admin.contrib import sqla
+from flask_admin.contrib import sqla
 
 from flaskygram.database import db
 from flaskygram.extensions import admin

@@ -1,7 +1,7 @@
 __version__ = '0.1.0'
 
 import wtforms
-from flask.ext.wtf import Form
+from flask_wtf import Form
 from wtforms_alchemy import model_form_factory
 
 from greeme.database import db

@@ -8,8 +8,8 @@ oauth implementation
 from datetime import datetime, timedelta
 
 from flask import request, render_template, jsonify, redirect
-from flask.ext.login import current_user, login_required
-from flask.ext.security.utils import verify_password
+from flask_login import current_user, login_required
+from flask_security.utils import verify_password
 
 from flaskygram.core.accounts.models import User
 from flaskygram.core.api_1_0 import api

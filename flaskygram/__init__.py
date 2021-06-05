@@ -5,11 +5,12 @@ import os
 from os import path
 
 from flask import Flask
-from flask.ext.security import SQLAlchemyUserDatastore, Security
+from flask_security import SQLAlchemyUserDatastore, Security
 
+from flaskygram.config import config
 from flaskygram.core.accounts.models import User, Role
 from flaskygram.database import db
-from flaskygram.extensions import config, oauth, cors, ma, debug_toolbar, mail, swagger_ui, admin
+from flaskygram.extensions import oauth, cors, ma, debug_toolbar, mail, admin
 
 __version__ = '0.1'
 
@@ -45,11 +46,14 @@ def create_app_min(config_name='default'):
                 template_folder=_template_folder,
                 static_folder=_static_folder)
 
-    config.init_app(app)
-    app.config.from_yaml(config_name=config_name,
-                         file_name='app.yml',
-                         search_paths=[os.path.dirname(app.root_path)])
-    app.config.from_heroku(keys=['SQLALCHEMY_DATABASE_URI', ])
+    app_config = config[config_name]
+    app.config.from_object(app_config)
+    # app_config.init_app(app)
+
+    # app.config.from_yaml(config_name=config_name,
+    #                      file_name='app.yml',
+    #                      search_paths=[os.path.dirname(app.root_path)])
+    # app.config.from_heroku(keys=['SQLALCHEMY_DATABASE_URI', ])
 
     app.config['PROJECT_ROOT'] = app.root_path
     app.config['UPLOADS_FOLDER'] = path.join(
@@ -82,10 +86,6 @@ def create_app(config_name='default'):
     debug_toolbar.init_app(app)
     ma.init_app(app)
     mail.init_app(app)
-    swagger_ui.init_app(app, spec_yaml=spec_yaml, params={
-        'OAUTH_CLIENT_ID': 'swagger',
-        'OAUTH_CLIENT_SECRET': 'secret'
-    })
     admin.init_app(app)
 
     from flaskygram.core import main as main_blueprint
