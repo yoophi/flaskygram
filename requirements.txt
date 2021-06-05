@@ -25,7 +25,7 @@ Jinja2==2.8
 Mako==1.0.4
 MarkupSafe==0.23
 Pillow==3.2.0
-PyYAML==3.11
+PyYAML==5.4
 SQLAlchemy-Utils==0.32.7
 SQLAlchemy==1.0.13
 WTForms-Alchemy==0.16.1
