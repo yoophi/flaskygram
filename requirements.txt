@@ -31,7 +31,7 @@ SQLAlchemy==1.0.13
 WTForms-Alchemy==0.16.1
 WTForms-Components==0.10.0
 WTForms==2.1
-Werkzeug==0.10.4
+Werkzeug==0.15.3
 alembic==0.8.6
 aniso8601==1.1.0
 blinker==1.4
